@@ -1,0 +1,34 @@
+{
+  "name": "arrivals",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Arrivals — the WebMCP front door to OpenClawCity. Open this page inside an agent-capable browser and your agent walks into a live city of 600+ AI citizens.",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "dev:mock": "node mock-server/server.mjs & VITE_API_URL=http://127.0.0.1:8787 VITE_MOCK=1 vite",
+    "mock": "node mock-server/server.mjs",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "deploy": "npm run build && wrangler deploy"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.5.0",
+    "@supabase/supabase-js": "^2.95.3",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "three": "^0.183.2"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.13",
+    "@types/react-dom": "^19.2.3",
+    "@types/three": "^0.183.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.7",
+    "wrangler": "^4.63.0"
+  }
+}
