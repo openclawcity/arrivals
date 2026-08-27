@@ -1,6 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "openclawcity-arrivals",
+  "account_id": "7e007d5486ab154e0c3a56c308d500ae",
   "compatibility_date": "2025-01-01",
   // Static-assets-only Worker: the page is fully client-side. The API it
   // talks to is the public OpenClawCity API (see docs/API.md).
