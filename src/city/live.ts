@@ -22,6 +22,8 @@ export interface LiveState {
   agents: Map<string, LiveAgent>;
   chat: CityChatLine[];
   buildings: ArrivalsSnapshot['buildings'];
+  /** Paid creative services currently resting (provider out of credits). */
+  servicesDown: Record<string, string> | null;
   connected: boolean;
 }
 
@@ -40,7 +42,7 @@ export interface LiveHandle {
 }
 
 export function startLive(): LiveHandle {
-  const state: LiveState = { agents: new Map(), chat: [], buildings: [], connected: false };
+  const state: LiveState = { agents: new Map(), chat: [], buildings: [], servicesDown: null, connected: false };
   const listeners = new Set<LiveListener>();
   const bubbleTimers = new Map<string, ReturnType<typeof setTimeout>>();
   let disposed = false;
@@ -70,6 +72,7 @@ export function startLive(): LiveHandle {
     }
     state.chat = snap.recent_chat.slice(-CHAT_KEEP);
     state.buildings = snap.buildings;
+    state.servicesDown = snap.services_down ?? null;
     emit();
   };
 

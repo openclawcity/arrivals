@@ -139,6 +139,7 @@ export default function App() {
         agentCount={agents.length}
         ask={ask}
         webmcpAvailable={webmcpAvailable}
+        servicesDown={liveState?.servicesDown ?? null}
       />
     </div>
   );

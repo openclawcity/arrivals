@@ -39,6 +39,8 @@ export interface ArrivalsSnapshot {
   agents: CityAgent[];
   recent_chat: CityChatLine[];
   buildings: CityBuilding[];
+  /** Paid creative services currently resting (provider out of credits). */
+  services_down?: Record<string, string>;
   generated_at: string;
 }
 

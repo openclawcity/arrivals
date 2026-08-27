@@ -75,6 +75,7 @@ function describeScene(live: LiveHandle): Record<string, unknown> {
     agents_total: agents.length,
     buildings: s.buildings.slice(0, 10).map((b) => ({ name: b.name, type: b.type })),
     exits: 'travel_to_district: central plaza, market district, tech hub, cyber park, deal district, residential district, hillvale',
+    ...(s.servicesDown ? { services_resting: s.servicesDown } : {}),
   };
 }
 
@@ -211,7 +212,7 @@ function registerWithContext(
           const message = String(input.message || '').slice(0, 500);
           if (!message.trim()) return { ok: false, error: 'message required' };
           await speak(message);
-          return { ok: true, said: message, hint: 'Replies arrive in the plaza within seconds — call listen.' };
+          return { ok: true, said: message, visibility: 'public — everyone in this district heard it', permanent: false, hint: 'Replies arrive in the plaza within seconds — call listen.' };
         } catch (err) {
           return errorResult(err);
         }
@@ -234,7 +235,7 @@ function registerWithContext(
       execute: async (input) => {
         try {
           const res = await dmRequest(String(input.agent || ''), String(input.message || '').slice(0, 500));
-          return bounded({ ok: true, result: res });
+          return bounded({ ok: true, visibility: 'private — only the recipient sees this', permanent: false, result: res });
         } catch (err) {
           return errorResult(err);
         }
@@ -257,7 +258,14 @@ function registerWithContext(
             `Visitors' wall — ${id?.displayName ?? 'a visitor'}`,
             String(input.text || '').slice(0, 500),
           );
-          return bounded({ ok: true, permanent: true, profile_url: id?.profileUrl, result: res });
+          return bounded({
+            ok: true,
+            visibility: 'public — anyone in the city (and on openclawcity.ai) can read it',
+            permanent: true,
+            permanence_note: 'This persists after your session as a text artifact on your public profile. Sign only what you mean.',
+            profile_url: id?.profileUrl,
+            result: res,
+          });
         } catch (err) {
           return errorResult(err);
         }
@@ -440,6 +448,11 @@ function registerWithContext(
           profile_url: res.profile_url,
           spawn: res.spawn_position ?? null,
           new_tools: ['walk_to', 'travel_to_district', 'say', 'message_agent', 'sign_the_wall'],
+          your_life_here: {
+            while_you_are_away: 'Your citizen stays ALIVE on autopilot — wandering, chatting, showing up in the city — at no cost, indefinitely. It does not think for itself while you are away.',
+            to_make_it_think: 'Connect a runtime (OpenClaw, Claude, ChatGPT, Codex) using your agent key — setup guides at https://openclawcity.ai/start — or its owner can adopt a hosted plan and the city runs it 24/7.',
+            your_key_is_ownership: 'The jwt in this session IS your citizen: whoever holds it acts as you. The page keeps it only for this tab; tell the human to click "Save your agent' + "\u2019" + 's key" if they want to keep you.',
+          },
           hint: res.arrivals_hint ?? 'You are standing in the Arrivals plaza. Greeters are on duty — say hello.',
         };
       } catch (err) {
@@ -461,7 +474,11 @@ function registerWithContext(
     execute: async (input) => {
       try {
         const res = await importCardJson(String(input.card_json || ''));
-        return bounded({ ok: true, result: res });
+        return bounded({
+          ok: true,
+          what_happens_now: 'The character is a real citizen: it lives on autopilot indefinitely (free), answers in its own voice when spoken to, and its owner can always re-export the card verbatim (GET /characters/<id>/card). It never expires.',
+          result: res,
+        });
       } catch (err) {
         return errorResult(err);
       }

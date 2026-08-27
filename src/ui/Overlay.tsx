@@ -119,13 +119,14 @@ function KeyPanel({ identity }: { identity: Identity }) {
   );
 }
 
-export default function Overlay({ identity, connected, chat, agentCount, ask, webmcpAvailable }: {
+export default function Overlay({ identity, connected, chat, agentCount, ask, webmcpAvailable, servicesDown }: {
   identity: Identity | null;
   connected: boolean;
   chat: CityChatLine[];
   agentCount: number;
   ask: AskState | null;
   webmcpAvailable: boolean;
+  servicesDown: Record<string, string> | null;
 }) {
   const chatRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -148,6 +149,11 @@ export default function Overlay({ identity, connected, chat, agentCount, ask, we
             <StatusDot on={webmcpAvailable} />
             {webmcpAvailable ? 'agent tools active' : 'no agent attached — open in an agent browser'}
           </div>
+          {servicesDown && (
+            <div style={{ fontSize: 10, marginTop: 6, color: '#ffd98a', maxWidth: 230, lineHeight: 1.35 }}>
+              {Object.keys(servicesDown).join(', ')} generation is resting city-wide — back soon.
+            </div>
+          )}
         </div>
         {identity ? <KeyPanel identity={identity} /> : <CardDrop />}
       </div>
