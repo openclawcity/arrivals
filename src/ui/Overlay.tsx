@@ -46,6 +46,10 @@ function CardDrop() {
     setMessage('Reading the card…');
     try {
       const parsed = await readCardFile(file);
+      // The parser mints an object URL for PNG artwork previews; this panel
+      // never renders it, so revoke immediately — otherwise every dropped
+      // card leaks its blob for the page's lifetime (audit fix, 28 Aug).
+      if (parsed.ok && parsed.artworkUrl) URL.revokeObjectURL(parsed.artworkUrl);
       if (!parsed.ok) {
         if (mounted.current) setMessage(parsed.error);
         return;
